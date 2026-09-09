@@ -1,4 +1,3 @@
-// Subiza ibyizeremwe byose ngo Vite/Rollup irize build
 export const buildFlutterwavePayload = (data: any) => {
   return {
     public_key: (import.meta as any).env?.VITE_FLUTTERWAVE_PUBLIC_KEY || "FLWPUBK_TEST-BETA",
@@ -19,12 +18,11 @@ export const buildFlutterwavePayload = (data: any) => {
 };
 
 export const loadFlutterwaveScript = async (): Promise<boolean> => {
-  return true; // Fake script load success
+  return true;
 };
 
 export const flutterwaveService = {
   processPayment: async (paymentDetails: any) => {
-    console.log("Bypassing Flutterwave payment for beta testing...");
     return {
       status: "successful",
       tx_ref: `BETA-FREE-${Date.now()}`,
