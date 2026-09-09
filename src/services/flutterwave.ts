@@ -1,8 +1,7 @@
-// Payload builder for Flutterwave
 export const buildFlutterwavePayload = (data: any) => {
   return {
     public_key: (import.meta as any).env?.VITE_FLUTTERWAVE_PUBLIC_KEY || "FLWPUBK_TEST-BETA",
-    tx_ref: `BETA-PASS-${Date.now()}`,
+    tx_ref: "BETA-PASS-" + Date.now(),
     amount: 0,
     currency: "RWF",
     payment_options: "card,mobilemoneyrwanda",
@@ -18,12 +17,12 @@ export const buildFlutterwavePayload = (data: any) => {
   };
 };
 
-export const loadFlutterwaveScript = async (): Promise<boolean> => {
+export const loadFlutterwaveScript = async () => {
   return true;
 };
 
 export const initializePayment = async (data: any) => {
-  return { status: "successful", tx_ref: `BETA-FREE-${Date.now()}` };
+  return { status: "successful", tx_ref: "BETA-FREE-" + Date.now() };
 };
 
 export const verifyTransaction = async (txRef: string) => {
@@ -34,8 +33,8 @@ export const flutterwaveService = {
   processPayment: async (paymentDetails: any) => {
     return {
       status: "successful",
-      tx_ref: `BETA-FREE-${Date.now()}`,
-      transaction_id: `FREE-${Math.floor(Math.random() * 1000000)}`
+      tx_ref: "BETA-FREE-" + Date.now(),
+      transaction_id: "FREE-" + Math.floor(Math.random() * 1000000)
     };
   },
   initializePayment,
