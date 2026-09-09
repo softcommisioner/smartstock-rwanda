@@ -1,36 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
-  ShieldAlert, 
-  MessageSquare, 
   Receipt, 
   ArrowRight, 
   CheckCircle2, 
   Lock, 
-  Store, 
-  KeyRound, 
   X, 
-  UserCheck, 
   PhoneCall, 
-  MapPin, 
   Calculator, 
   Sparkles,
   ChevronRight,
   ChevronLeft,
-  Send,
-  Building2,
-  Zap,
-  Scale,
-  TrendingUp,
-  BarChart3,
-  Smartphone,
-  EyeOff,
   Globe,
   ChevronDown,
-  Bell,
-  Mail,
-  ArrowLeft,
-  RefreshCw
+  Bell
 } from 'lucide-react';
 import { OnboardingRegistration } from '../../types';
 import { Language, TRANSLATIONS } from './translations';
@@ -86,12 +69,12 @@ const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegisterShop }) => {
-  // Trilingual Language State (rw = Kinyarwanda default, en = English, fr = Français)
+  // Trilingual Language State
   const [language, setLanguage] = useState<Language>('rw');
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const t = TRANSLATIONS[language];
 
-  // Carousel State (3-second slide transition)
+  // Carousel State
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -99,17 +82,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register' | 'cashier'>('login');
   
-  // Strict Email/Password + Email OTP Authentication State
+  // Phone + SMS OTP Authentication State
   const [authStep, setAuthStep] = useState<'credentials' | 'otp'>('credentials');
-  const [ownerEmail, setOwnerEmail] = useState('mugabo@smartstock.rw');
+  const [ownerPhone, setOwnerPhone] = useState('0788123456');
   const [ownerPassword, setOwnerPassword] = useState('Password123!');
-  const [cashierEmail, setCashierEmail] = useState('eric@smartstock.rw');
+  const [cashierPhone, setCashierPhone] = useState('0788999000');
   const [cashierPassword, setCashierPassword] = useState('Password123!');
   const [loginError, setLoginError] = useState('');
 
-  // Email OTP Verification State
+  // SMS OTP Verification State
   const [pendingRole, setPendingRole] = useState<'owner' | 'employee'>('owner');
-  const [pendingEmail, setPendingEmail] = useState('');
+  const [pendingPhone, setPendingPhone] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [otpInput, setOtpInput] = useState('');
   const [otpTimer, setOtpTimer] = useState(60);
@@ -118,15 +101,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
   // Daily Leakage Calculator State
   const [dailyLeakage, setDailyLeakage] = useState<number>(500);
 
-  // Lead capture form state ("Wifuza Kutuvugisha?")
-  const [contactName, setContactName] = useState('');
-  const [contactPhone, setContactPhone] = useState('+250 788 ');
-  const [contactShopName, setContactShopName] = useState('');
-  const [contactLocation, setContactLocation] = useState('Nyarugenge, Kigali');
-  const [contactSubmitted, setContactSubmitted] = useState(false);
-  const [contactLoading, setContactLoading] = useState(false);
-
-  // Auto-play carousel with 3-second transition
+  // Auto-play carousel
   useEffect(() => {
     if (!isAutoPlaying) return;
     const interval = setInterval(() => {
@@ -148,7 +123,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
     };
   }, [authStep, otpTimer]);
 
-  // Compounded leakage calculations
   const monthlyLeakage = dailyLeakage * 30;
   const annualLeakage = dailyLeakage * 365;
 
@@ -162,12 +136,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
     return code;
   };
 
-  // Step 1: Owner Email + Password Verification
+  // Step 1: Owner Credentials Submit
   const handleOwnerCredentialsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    if (!ownerEmail.trim() || !ownerEmail.includes('@') || !ownerEmail.includes('.')) {
-      setLoginError('Nyamuneka shyiramo Email nyayo (e.g. mugabo@smartstock.rw).');
+    if (!ownerPhone.trim() || ownerPhone.length < 8) {
+      setLoginError('Nyamuneka shyiramo Nimero ya Telefone nyayo (e.g. 0788123456).');
       return;
     }
     if (!ownerPassword.trim() || ownerPassword.length < 4) {
@@ -178,18 +152,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
     setPendingRole('owner');
-    setPendingEmail(ownerEmail.trim());
+    setPendingPhone(ownerPhone.trim());
     setOtpInput('');
     setOtpTimer(60);
     setAuthStep('otp');
   };
 
-  // Step 1: Cashier Email + Password Verification
+  // Step 1: Cashier Credentials Submit
   const handleCashierCredentialsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    if (!cashierEmail.trim() || !cashierEmail.includes('@') || !cashierEmail.includes('.')) {
-      setLoginError('Nyamuneka shyiramo Email nyayo (e.g. eric@smartstock.rw).');
+    if (!cashierPhone.trim() || cashierPhone.length < 8) {
+      setLoginError('Nyamuneka shyiramo Nimero ya Telefone nyayo.');
       return;
     }
     if (!cashierPassword.trim() || cashierPassword.length < 4) {
@@ -200,20 +174,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
     setPendingRole('employee');
-    setPendingEmail(cashierEmail.trim());
+    setPendingPhone(cashierPhone.trim());
     setOtpInput('');
     setOtpTimer(60);
     setAuthStep('otp');
   };
 
-  // Step 2: Validate 6-Digit Email OTP & Grant Access
+  // Step 2: Validate SMS OTP & Grant Access
   const handleVerifyOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
 
     const cleanInput = otpInput.trim();
     if (!cleanInput || cleanInput.length !== 6) {
-      setLoginError('Shyiramo imibare 6 y\'ikode ya OTP yoherejwe kuri email yawe.');
+      setLoginError('Shyiramo imibare 6 y\'ikode ya OTP yoherejwe kuri telefone yawe.');
       return;
     }
 
@@ -223,43 +197,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
       setOtpInput('');
       setLoginError('');
       if (pendingRole === 'owner') {
-        onEnterApp('owner', 'owner_dashboard');
+        onEnterApp('owner', 'fraud_dashboard');
       } else {
         onEnterApp('employee', 'pos');
       }
     } else {
-      setLoginError(`Kodi ya OTP yanditse siyo. Koresha ikode yoherejwe kuri email: ${generatedOtp}`);
+      setLoginError(`Kodi ya OTP yanditse siyo. Gerageza 123456 cyangwa ikode: ${generatedOtp}`);
     }
   };
-
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!contactName.trim() || !contactShopName.trim() || !contactPhone.trim()) {
-      alert('Nyamuneka uzuza imyirondoro yose isabwa.');
-      return;
-    }
-    setContactLoading(true);
-    setTimeout(() => {
-      setContactLoading(false);
-      setContactSubmitted(true);
-    }, 600);
-  };
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const currentSlide = HERO_SLIDES[currentSlideIndex];
 
   return (
     <div className="min-h-screen bg-white text-slate-800 font-sans selection:bg-emerald-500 selection:text-white">
-      {/* 1. CLEAN NAVBAR */}
+      {/* 1. NAVBAR */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo: Green Shield "SmartStock RWANDA" */}
           <div 
             className="flex items-center gap-2.5 cursor-pointer" 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -275,15 +226,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
             </div>
           </div>
 
-          {/* Top-Right Action Buttons & Trilingual Language Switcher */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Sleek Trilingual Language Switcher */}
             <div className="relative">
               <button
-                id="btn-language-selector"
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
                 className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition cursor-pointer"
-                aria-label="Select Language"
               >
                 <Globe className="w-3.5 h-3.5 text-emerald-600" />
                 <span className="text-sm leading-none">{t.flag}</span>
@@ -293,10 +240,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
 
               {isLangDropdownOpen && (
                 <>
-                  <div 
-                    className="fixed inset-0 z-40" 
-                    onClick={() => setIsLangDropdownOpen(false)} 
-                  />
+                  <div className="fixed inset-0 z-40" onClick={() => setIsLangDropdownOpen(false)} />
                   <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 py-1.5 overflow-hidden">
                     <div className="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                       Ururimi / Language
@@ -321,9 +265,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
                             <span className="text-base leading-none">{item.flag}</span>
                             <span>{item.label}</span>
                           </div>
-                          {isSelected && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                          )}
+                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
                         </button>
                       );
                     })}
@@ -333,9 +275,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
             </div>
 
             <button
-              id="btn-nav-cashier-login"
               onClick={() => {
                 setAuthTab('cashier');
+                setAuthStep('credentials');
                 setIsAuthModalOpen(true);
               }}
               className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition cursor-pointer"
@@ -343,9 +285,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
               {t.nav.cashierLogin}
             </button>
             <button
-              id="btn-nav-owner-login"
               onClick={() => {
-                setAuthTab('register');
+                setAuthTab('login');
+                setAuthStep('credentials');
                 setIsAuthModalOpen(true);
               }}
               className="px-3.5 sm:px-4.5 py-2 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-sm shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
@@ -357,13 +299,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
         </div>
       </header>
 
-      {/* 2. FULL-SCREEN HERO BACKGROUND CAROUSEL OVERLAY */}
+      {/* 2. HERO CAROUSEL */}
       <section 
         className="relative w-full min-h-[620px] sm:min-h-[680px] lg:min-h-[740px] flex items-end overflow-hidden bg-slate-950"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
-        {/* Full-Width Background Images Carousel with 3-Second Crossfade */}
         {HERO_SLIDES.map((slide, index) => {
           const isActive = currentSlideIndex === index;
           return (
@@ -385,35 +326,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
           );
         })}
 
-        {/* Soft dark gradient overlay ensuring optimal contrast for headline text */}
         <div className="absolute inset-0 z-[1] bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
         <div className="absolute inset-0 z-[1] bg-gradient-to-r from-slate-950/80 via-slate-950/30 to-transparent" />
 
-        {/* Overlay Content Container */}
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-24 pb-12 sm:pb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-8 lg:gap-12">
-          
-          {/* Bottom-Left Overlay Text & Action Content */}
           <div className="max-w-2xl space-y-5 text-left">
-            {/* Small Badge Tag */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/40 text-xs font-semibold text-emerald-300 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>{t.hero.badge}</span>
             </div>
 
-            {/* Main Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
               {t.hero.headline}
             </h1>
 
-            {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-200 leading-relaxed max-w-xl font-normal">
               {t.hero.subtitle}
             </p>
 
-            {/* Primary Action Button */}
             <div className="pt-2">
               <button
-                id="btn-hero-register-owner"
                 onClick={() => {
                   setAuthTab('register');
                   setIsAuthModalOpen(true);
@@ -426,9 +358,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
             </div>
           </div>
 
-          {/* Minimalist Carousel Indicators (Pinned to bottom-right corner) */}
           <div className="lg:self-end flex items-center gap-3 bg-slate-950/40 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/10 shadow-lg">
-            {/* Progress Dots */}
             <div className="flex items-center gap-1.5">
               {HERO_SLIDES.map((slide, index) => (
                 <button
@@ -444,29 +374,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
 
             <div className="w-px h-3.5 bg-white/20 mx-0.5" />
 
-            {/* Light Slide Navigation Arrows */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentSlideIndex((prev) => (prev === 0 ? HERO_SLIDES.length - 1 : prev - 1))}
                 className="w-6 h-6 rounded-full hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition cursor-pointer"
-                aria-label="Previous slide"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setCurrentSlideIndex((prev) => (prev + 1) % HERO_SLIDES.length)}
                 className="w-6 h-6 rounded-full hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition cursor-pointer"
-                aria-label="Next slide"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* 3. THREE KEY PROBLEM SOLVERS (Clean Light Theme with #F8FAFC, Dark Slate #0F172A & Emerald #10B981) */}
+      {/* 3. PROBLEM SOLVERS */}
       <section id="ibibazo-dukemura" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F8FAFC] border-y border-slate-200/80">
         <div className="max-w-6xl mx-auto">
           <div className="text-center space-y-3 mb-14">
@@ -483,18 +409,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Bell -> Real-Time Stock & Sales Notifications */}
             <div className="p-7 sm:p-8 bg-white border border-slate-200/90 hover:border-emerald-500 rounded-3xl space-y-4 transition shadow-xs hover:shadow-md flex flex-col justify-between group">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 group-hover:scale-105 group-hover:bg-emerald-100/70 transition-all shadow-xs">
                   <Bell className="w-6 h-6 stroke-[2.5]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">
-                  {t.problems.card1.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">
-                  {t.problems.card1.desc}
-                </p>
+                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">{t.problems.card1.title}</h3>
+                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">{t.problems.card1.desc}</p>
               </div>
               <div className="pt-5 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-mono font-medium">{t.problems.card1.tag}</span>
@@ -504,18 +425,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
               </div>
             </div>
 
-            {/* Card 2: Bell / SMS -> SMS Alert Instant */}
             <div className="p-7 sm:p-8 bg-white border border-slate-200/90 hover:border-emerald-500 rounded-3xl space-y-4 transition shadow-xs hover:shadow-md flex flex-col justify-between group">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 group-hover:scale-105 group-hover:bg-emerald-100/70 transition-all shadow-xs">
                   <Bell className="w-6 h-6 stroke-[2.5]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">
-                  {t.problems.card2.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">
-                  {t.problems.card2.desc}
-                </p>
+                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">{t.problems.card2.title}</h3>
+                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">{t.problems.card2.desc}</p>
               </div>
               <div className="pt-5 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-mono font-medium">{t.problems.card2.tag}</span>
@@ -525,18 +441,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
               </div>
             </div>
 
-            {/* Card 3: Receipt -> Fagitire za RRA VAT EBM */}
             <div className="p-7 sm:p-8 bg-white border border-slate-200/90 hover:border-emerald-500 rounded-3xl space-y-4 transition shadow-xs hover:shadow-md flex flex-col justify-between group">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 group-hover:scale-105 group-hover:bg-emerald-100/70 transition-all shadow-xs">
                   <Receipt className="w-6 h-6 stroke-[2.5]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">
-                  {t.problems.card3.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">
-                  {t.problems.card3.desc}
-                </p>
+                <h3 className="text-lg font-bold text-[#0F172A] tracking-tight">{t.problems.card3.title}</h3>
+                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">{t.problems.card3.desc}</p>
               </div>
               <div className="pt-5 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-mono font-medium">{t.problems.card3.tag}</span>
@@ -549,54 +460,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
         </div>
       </section>
 
-      {/* 4. PRICING & ROI SECTION (Clean Light Cards) */}
+      {/* 4. PRICING & LEAKAGE CALCULATOR */}
       <section id="igiciro" className="py-16 bg-slate-50 border-y border-slate-200 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/70 border border-emerald-200 text-emerald-900 rounded-full text-xs font-bold">
               <span>{t.pricing.eyebrow}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
-              {t.pricing.title}
-            </h2>
-            <p className="text-sm text-[#334155] max-w-lg mx-auto">
-              {t.pricing.subtitle}
-            </p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">{t.pricing.title}</h2>
+            <p className="text-sm text-[#334155] max-w-lg mx-auto">{t.pricing.subtitle}</p>
           </div>
 
-          {/* Pricing Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Step 1: One-Time In-Person Setup Fee */}
             <div className="p-7 sm:p-8 bg-white border border-slate-200 rounded-3xl space-y-5 flex flex-col justify-between shadow-sm">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{t.pricing.setupTitle}</span>
                   <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded-md">{t.pricing.setupBadge}</span>
                 </div>
-
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-extrabold font-mono text-[#0F172A]">{t.pricing.setupPrice}</span>
                   <span className="text-sm font-bold text-slate-500 font-sans">{t.pricing.setupPriceSub}</span>
                 </div>
-
-                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">
-                  {t.pricing.setupDesc}
-                </p>
-
-                <div className="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.setupF1}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.setupF2}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.setupF3}</span>
-                  </div>
-                </div>
+                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">{t.pricing.setupDesc}</p>
               </div>
 
               <button
@@ -611,41 +497,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
               </button>
             </div>
 
-            {/* Step 2: Monthly Software Plan */}
             <div className="p-7 sm:p-8 bg-white border-2 border-emerald-500 rounded-3xl space-y-5 flex flex-col justify-between relative shadow-lg shadow-emerald-600/10">
               <div className="absolute top-0 right-0 bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-bl-2xl">
                 {t.pricing.monthlyPopular}
               </div>
-
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">{t.pricing.monthlyTitle}</span>
                   <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-800 text-[10px] font-mono font-bold rounded-md border border-emerald-200">{t.pricing.monthlyBadge}</span>
                 </div>
-
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-extrabold font-mono text-emerald-700">{t.pricing.monthlyPrice}</span>
                   <span className="text-sm font-bold text-slate-500 font-sans">{t.pricing.monthlyPriceSub}</span>
                 </div>
-
-                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">
-                  {t.pricing.monthlyDesc}
-                </p>
-
-                <div className="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-700">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.monthlyF1}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.monthlyF2}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>{t.pricing.monthlyF3}</span>
-                  </div>
-                </div>
+                <p className="text-xs sm:text-sm text-[#334155] leading-relaxed">{t.pricing.monthlyDesc}</p>
               </div>
 
               <button
@@ -661,7 +526,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
             </div>
           </div>
 
-          {/* Daily Leakage Calculator */}
           <div className="max-w-4xl mx-auto bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -680,537 +544,223 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onRegister
               step="100"
               value={dailyLeakage}
               onChange={(e) => setDailyLeakage(Number(e.target.value))}
-              className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+              className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center pt-2">
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                <div className="text-[#334155] text-xs font-semibold">{t.pricing.calcLoss30d}</div>
-                <div className="text-xl font-bold font-mono text-red-600 mt-1">
-                  -{monthlyLeakage.toLocaleString()} <span className="text-xs font-sans text-slate-500">RWF</span>
-                </div>
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="text-xs text-slate-500 font-medium">Igihombo mu Kwezi</div>
+                <div className="text-xl font-extrabold font-mono text-amber-600 mt-1">{monthlyLeakage.toLocaleString()} RWF</div>
               </div>
-
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-                <div className="text-[#334155] text-xs font-semibold">{t.pricing.calcLoss365d}</div>
-                <div className="text-xl font-bold font-mono text-red-600 mt-1">
-                  -{annualLeakage.toLocaleString()} <span className="text-xs font-sans text-slate-500">RWF</span>
-                </div>
-              </div>
-
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
-                <div className="text-emerald-800 text-xs font-bold">{t.pricing.calcGainWithSmartStock}</div>
-                <div className="text-xl font-bold font-mono text-emerald-700 mt-1">
-                  +{(annualLeakage - 96000).toLocaleString()} <span className="text-xs font-sans text-emerald-700">RWF / yr</span>
-                </div>
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div className="text-xs text-slate-500 font-medium">Igihombo mu Umwaka</div>
+                <div className="text-xl font-extrabold font-mono text-rose-600 mt-1">{annualLeakage.toLocaleString()} RWF</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. CONTACT & GUIDANCE SECTION ("Wifuza Kutuvugisha?") */}
-      <section id="tuvugishe" className="py-16 px-4 sm:px-6 max-w-3xl mx-auto">
-        <div className="text-center space-y-2 mb-8">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-bold">
-            <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
-            <span>{t.contact.eyebrow}</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
-            {t.contact.title}
-          </h2>
-          <p className="text-sm text-[#334155] max-w-lg mx-auto">
-            {t.contact.subtitle}
-          </p>
-        </div>
-
-        {/* Clean White Card Form */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-lg">
-          {contactSubmitted ? (
-            <div className="text-center py-8 space-y-3 animate-in fade-in">
-              <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 mx-auto">
-                <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
-              </div>
-              <h3 className="text-lg font-bold text-[#0F172A]">{t.contact.successTitle}, {contactName}!</h3>
-              <p className="text-xs sm:text-sm text-[#334155] max-w-md mx-auto">
-                {t.contact.successDesc1} <strong className="text-slate-900">"{contactShopName}"</strong> {t.contact.successDesc2}
-              </p>
-              <p className="text-xs text-emerald-700 font-mono font-bold bg-emerald-50 py-2 px-3 rounded-xl border border-emerald-200 inline-block">
-                📲 {t.contact.successCall}
-              </p>
-              <div>
-                <button
-                  onClick={() => setContactSubmitted(false)}
-                  className="mt-4 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition cursor-pointer"
-                >
-                  {t.contact.newRequestBtn}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleContactSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                    {t.contact.nameLabel}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={t.contact.namePlaceholder}
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white outline-none transition"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                    {t.contact.phoneLabel}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="+250 788 123 456"
-                    value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white outline-none transition"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                    {t.contact.shopLabel}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={t.contact.shopPlaceholder}
-                    value={contactShopName}
-                    onChange={(e) => setContactShopName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-600 focus:bg-white outline-none transition"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1.5">
-                    {t.contact.locationLabel}
-                  </label>
-                  <select
-                    value={contactLocation}
-                    onChange={(e) => setContactLocation(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:bg-white outline-none transition"
-                  >
-                    <option value="Nyarugenge (Nyamirambo / City Center), Kigali">Nyarugenge, Kigali</option>
-                    <option value="Gasabo (Kimironko / Kacyiru / Remera), Kigali">Gasabo, Kigali</option>
-                    <option value="Kicukiro (Gikondo / Sonatubes / Kabeza), Kigali">Kicukiro, Kigali</option>
-                    <option value="Rubavu (Gisenyi), Western Province">Rubavu (Gisenyi)</option>
-                    <option value="Musanze (Ruhengeri), Northern Province">Musanze (Ruhengeri)</option>
-                    <option value="Huye (Butare), Southern Province">Huye (Butare)</option>
-                    <option value="Rwamagana, Eastern Province">Rwamagana</option>
-                    <option value="Rusizi (Cyangugu), Western Province">Rusizi (Cyangugu)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={contactLoading}
-                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 cursor-pointer"
-              >
-                {contactLoading ? (
-                  <span>{t.contact.submittingBtn}</span>
-                ) : (
-                  <>
-                    <span>{t.contact.submitBtn}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-slate-200 py-8 px-4 sm:px-6 text-center text-xs text-[#334155] bg-slate-50">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="font-bold text-[#0F172A]">SmartStock RWANDA</span>
-            <span>&bull; {t.footer.rights}</span>
-          </div>
-          <div className="flex items-center gap-4 text-[#334155] font-medium">
-            <span>Kigali, Rwanda</span>
-            <span>&bull;</span>
-            <span>MTN MoMo & Airtel Money</span>
-            <span>&bull;</span>
-            <button onClick={() => scrollToSection('tuvugishe')} className="hover:text-emerald-700 cursor-pointer">
-              {t.footer.contactUs}
-            </button>
-          </div>
-        </div>
-      </footer>
-
-      {/* AUTHENTICATION & ONBOARDING MODAL */}
+      {/* AUTH MODAL */}
       {isAuthModalOpen && (
-        <>
-          {authTab === 'register' ? (
-            <RegisterShopFlow
-              onRegisterShop={onRegisterShop}
-              onNavigateToPOS={() => {
-                setIsAuthModalOpen(false);
-                onEnterApp('employee', 'pos');
-              }}
-              onNavigateToStock={() => {
-                setIsAuthModalOpen(false);
-                onEnterApp('owner', 'owner_dashboard');
-              }}
-              onClose={() => {
-                setIsAuthModalOpen(false);
-              }}
-              onSwitchToLogin={() => {
-                setAuthTab('login');
-              }}
-              isModal={true}
-            />
-          ) : (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs overflow-y-auto">
-              <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl my-auto animate-in fade-in zoom-in-95 duration-150">
-                {/* Modal Header */}
-                <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold shadow-sm">
-                      {authStep === 'otp' ? <Mail className="w-4 h-4 text-white" /> : <Lock className="w-4 h-4 text-white" />}
-                    </div>
-                    <div>
-                      <h3 className="font-extrabold text-base text-slate-900">SmartStock RWANDA</h3>
-                      <p className="text-xs text-slate-500">
-                        {authStep === 'otp' ? "Email OTP Verification" : "Kwinjira no Gufungura Konti"}
-                      </p>
-                    </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-8 overflow-hidden">
+            <button
+              onClick={() => setIsAuthModalOpen(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-bold text-lg"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex border-b border-slate-200 mb-6">
+              <button
+                onClick={() => {
+                  setAuthTab('login');
+                  setAuthStep('credentials');
+                }}
+                className={`pb-3 text-xs sm:text-sm font-bold flex-1 text-center transition border-b-2 ${
+                  authTab === 'login' ? 'border-emerald-600 text-emerald-800' : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                Nyir'Ubucuruzi (Owner)
+              </button>
+              <button
+                onClick={() => {
+                  setAuthTab('cashier');
+                  setAuthStep('credentials');
+                }}
+                className={`pb-3 text-xs sm:text-sm font-bold flex-1 text-center transition border-b-2 ${
+                  authTab === 'cashier' ? 'border-emerald-600 text-emerald-800' : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                Umusore/Umukobwa wa POS
+              </button>
+              <button
+                onClick={() => {
+                  setAuthTab('register');
+                }}
+                className={`pb-3 text-xs sm:text-sm font-bold flex-1 text-center transition border-b-2 ${
+                  authTab === 'register' ? 'border-emerald-600 text-emerald-800' : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                Iyandikishe
+              </button>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">
+                {loginError}
+              </div>
+            )}
+
+            {authTab === 'register' ? (
+              <RegisterShopFlow
+                onComplete={(data) => {
+                  onRegisterShop(data);
+                  setIsAuthModalOpen(false);
+                  onEnterApp('owner', 'fraud_dashboard');
+                }}
+              />
+            ) : authStep === 'credentials' ? (
+              authTab === 'login' ? (
+                <form onSubmit={handleOwnerCredentialsSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                      Phone Number (Nimero ya Telefone)
+                    </label>
+                    <input
+                      type="tel"
+                      value={ownerPhone}
+                      onChange={(e) => setOwnerPhone(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm outline-none"
+                      placeholder="0788123456"
+                      required
+                    />
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                      Password (Ijambobanga)
+                    </label>
+                    <input
+                      type="password"
+                      value={ownerPassword}
+                      onChange={(e) => setOwnerPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600 space-y-1">
+                    <p>Demo Phone: <strong className="text-emerald-700 font-mono">0788123456</strong></p>
+                    <p>Demo Password: <strong className="text-emerald-700 font-mono">Password123!</strong></p>
+                  </div>
+
                   <button
-                    onClick={() => {
-                      setIsAuthModalOpen(false);
-                      setAuthStep('credentials');
-                      setLoginError('');
-                    }}
-                    className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition cursor-pointer"
+                    type="submit"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg transition"
                   >
-                    <X className="w-5 h-5" />
+                    <span>Komeza kuri SMS OTP</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleCashierCredentialsSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                      Phone Number (Nimero ya Telefone)
+                    </label>
+                    <input
+                      type="tel"
+                      value={cashierPhone}
+                      onChange={(e) => setCashierPhone(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm outline-none"
+                      placeholder="0788999000"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                      Password (Ijambobanga)
+                    </label>
+                    <input
+                      type="password"
+                      value={cashierPassword}
+                      onChange={(e) => setCashierPassword(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-sm outline-none"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg transition"
+                  >
+                    <span>Komeza kuri SMS OTP</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              )
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4 text-center">
+                <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-1" />
+                  <p className="text-xs text-slate-600">SMS ya OTP yoherejwe kuri <strong>{pendingPhone}</strong></p>
+                  <p className="text-[11px] text-emerald-800 font-mono font-bold mt-1">Demo OTP Code: {generatedOtp}</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                    Shyiramo Ikode ya OTP (6 digits)
+                  </label>
+                  <input
+                    type="text"
+                    value={otpInput}
+                    onChange={(e) => setOtpInput(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 text-center text-xl font-bold tracking-widest outline-none"
+                    placeholder="123456"
+                    maxLength={6}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition"
+                >
+                  Emeza Kwinjira →
+                </button>
+
+                <div className="flex justify-between items-center text-xs text-slate-500 pt-2">
+                  <span>{otpTimer > 0 ? `Resend mu: ${otpTimer}s` : 'Ushobora kuyoherereza cyaha'}</span>
+                  <button
+                    type="button"
+                    disabled={otpTimer > 0}
+                    onClick={generateNewOtp}
+                    className="text-emerald-700 font-bold disabled:opacity-40"
+                  >
+                    Resend SMS OTP
                   </button>
                 </div>
-
-                {/* Switcher Tabs - Only in credentials step */}
-                {authStep === 'credentials' && (
-                  <div className="flex border-b border-slate-200 bg-slate-100/70 p-1.5">
-                    <button
-                      onClick={() => {
-                        setAuthTab('login');
-                        setLoginError('');
-                      }}
-                      className={`flex-1 py-2 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'login'
-                          ? 'bg-white text-emerald-700 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      <KeyRound className="w-3.5 h-3.5" />
-                      <span>Owner Login</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setAuthTab('cashier');
-                        setLoginError('');
-                      }}
-                      className={`flex-1 py-2 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'cashier'
-                          ? 'bg-white text-amber-700 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      <UserCheck className="w-3.5 h-3.5" />
-                      <span>Cashier POS</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setAuthTab('register');
-                        setLoginError('');
-                      }}
-                      className={`flex-1 py-2 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer ${
-                        authTab === 'register'
-                          ? 'bg-white text-emerald-700 shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      <Store className="w-3.5 h-3.5" />
-                      <span>Register Shop</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Modal Body */}
-                <div className="p-6">
-                  {/* STEP 2: EMAIL OTP VERIFICATION SCREEN (DYNAMIC TRANSITION) */}
-                  {authStep === 'otp' ? (
-                    <form onSubmit={handleVerifyOtp} className="space-y-4">
-                      <div className="text-center space-y-1.5 pb-1">
-                        <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-emerald-700">
-                          <Mail className="w-6 h-6" />
-                        </div>
-                        <h4 className="text-base font-bold text-slate-900">Email OTP Verification</h4>
-                        <p className="text-xs text-slate-500">
-                          Injiza ikode y'imibare 6 yoherejwe kuri email yawe:
-                        </p>
-                        <div className="inline-block px-3 py-1 bg-slate-100 rounded-full text-xs font-semibold text-slate-800 font-mono">
-                          {pendingEmail}
-                        </div>
-                      </div>
-
-                      {/* Simulated In-App Email Delivery Notice */}
-                      <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-left space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold text-emerald-800 flex items-center gap-1.5">
-                            <Mail className="w-3.5 h-3.5" /> Email Notification (Simulated)
-                          </span>
-                          <span className="text-[10px] text-emerald-600 font-medium">Ubu ako kanya</span>
-                        </div>
-                        <p className="text-xs text-emerald-950">
-                          SmartStock Rwanda Security: Ikode yawe yo kwinjira ni <strong className="font-mono text-sm tracking-wider font-extrabold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-300 ml-1">{generatedOtp}</strong>
-                        </p>
-                      </div>
-
-                      {loginError && (
-                        <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs text-center font-medium">
-                          {loginError}
-                        </div>
-                      )}
-
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <label className="text-xs font-bold text-slate-700">Shyiramo Ikode ya OTP (6-Digits)</label>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOtpInput(generatedOtp);
-                              setLoginError('');
-                            }}
-                            className="text-xs text-emerald-700 font-bold hover:underline cursor-pointer"
-                          >
-                            Koresha Ikode: {generatedOtp}
-                          </button>
-                        </div>
-                        <input
-                          id="input-email-otp"
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          maxLength={6}
-                          value={otpInput}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                            setOtpInput(val);
-                            setLoginError('');
-                          }}
-                          placeholder="••••••"
-                          className="w-full text-center tracking-[0.6em] font-mono text-3xl font-extrabold bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 text-slate-900 focus:border-emerald-600 focus:bg-white outline-none shadow-inner"
-                          autoFocus
-                          required
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                        <span>Ntiwabonye ikode?</span>
-                        {otpTimer > 0 ? (
-                          <span className="font-mono font-medium text-slate-500">Ongera wohereze muri ({otpTimer}s)</span>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={generateNewOtp}
-                            className="text-emerald-700 font-bold hover:underline flex items-center gap-1 cursor-pointer"
-                          >
-                            <RefreshCw className="w-3 h-3" /> Ongera wohereze ikode
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 pt-2">
-                        <button
-                          id="btn-verify-otp"
-                          type="submit"
-                          className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>Emeza Ikode & Kwinjira ({pendingRole === 'owner' ? "Owner Dashboard" : "Cashier POS"})</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAuthStep('credentials');
-                            setLoginError('');
-                          }}
-                          className="w-full py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1 cursor-pointer"
-                        >
-                          <ArrowLeft className="w-3.5 h-3.5" />
-                          <span>Subira inyuma / Hindura Email na Password</span>
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <>
-                      {/* TAB 1: OWNER EMAIL & PASSWORD LOGIN */}
-                      {authTab === 'login' && (
-                        <form onSubmit={handleOwnerCredentialsSubmit} className="space-y-4">
-                          <div className="text-center space-y-1 pb-1">
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-emerald-700">
-                              <UserCheck className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-sm font-bold text-slate-900">Kwinjira nk'Umuyobozi (Store Owner)</h4>
-                            <p className="text-xs text-slate-500">
-                              Injiza Email na Password byawe by'umuyobozi kugira ngo wohererezwe ikode ya OTP.
-                            </p>
-                          </div>
-
-                          {loginError && (
-                            <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs text-center font-medium">
-                              {loginError}
-                            </div>
-                          )}
-
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
-                              <input
-                                id="owner-email-input"
-                                type="email"
-                                value={ownerEmail}
-                                onChange={(e) => {
-                                  setOwnerEmail(e.target.value);
-                                  setLoginError('');
-                                }}
-                                placeholder="mugabo@smartstock.rw"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:bg-white outline-none"
-                                required
-                              />
-                            </div>
-
-                            <div>
-                              <label className="text-xs font-bold text-slate-700 block mb-1">Password (Ijambobanga)</label>
-                              <input
-                                id="owner-password-input"
-                                type="password"
-                                value={ownerPassword}
-                                onChange={(e) => {
-                                  setOwnerPassword(e.target.value);
-                                  setLoginError('');
-                                }}
-                                placeholder="••••••••"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:border-emerald-600 focus:bg-white outline-none"
-                                required
-                              />
-                            </div>
-
-                            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-0.5">
-                              <div>Demo Owner Email: <strong className="text-emerald-700 font-mono">mugabo@smartstock.rw</strong></div>
-                              <div>Demo Password: <strong className="text-emerald-700 font-mono">Password123!</strong></div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 pt-2">
-                            <button
-                              id="btn-owner-submit"
-                              type="submit"
-                              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
-                            >
-                              <span>Komeza kuri Email OTP</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </form>
-                      )}
-
-                      {/* TAB 2: CASHIER EMAIL & PASSWORD LOGIN */}
-                      {authTab === 'cashier' && (
-                        <form onSubmit={handleCashierCredentialsSubmit} className="space-y-4">
-                          <div className="text-center space-y-1 pb-1">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto text-amber-700">
-                              <Zap className="w-6 h-6" />
-                            </div>
-                            <h4 className="text-sm font-bold text-slate-900">Kwinjira nk'Umukozi (Cashier POS)</h4>
-                            <p className="text-xs text-slate-500">
-                              Injiza Email na Password by'umukozi ubashe kubona ikode ya OTP yo kugurisha.
-                            </p>
-                          </div>
-
-                          {loginError && (
-                            <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs text-center font-medium">
-                              {loginError}
-                            </div>
-                          )}
-
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
-                              <input
-                                id="cashier-email-input"
-                                type="email"
-                                value={cashierEmail}
-                                onChange={(e) => {
-                                  setCashierEmail(e.target.value);
-                                  setLoginError('');
-                                }}
-                                placeholder="eric@smartstock.rw"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:border-amber-500 focus:bg-white outline-none"
-                                required
-                              />
-                            </div>
-
-                            <div>
-                              <label className="text-xs font-bold text-slate-700 block mb-1">Password (Ijambobanga)</label>
-                              <input
-                                id="cashier-password-input"
-                                type="password"
-                                value={cashierPassword}
-                                onChange={(e) => {
-                                  setCashierPassword(e.target.value);
-                                  setLoginError('');
-                                }}
-                                placeholder="••••••••"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:border-amber-500 focus:bg-white outline-none"
-                                required
-                              />
-                            </div>
-
-                            <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-0.5">
-                              <div>Demo Cashier Email: <strong className="text-amber-700 font-mono">eric@smartstock.rw</strong></div>
-                              <div>Demo Password: <strong className="text-amber-700 font-mono">Password123!</strong></div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 pt-2">
-                            <button
-                              id="btn-cashier-submit"
-                              type="submit"
-                              className="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer"
-                            >
-                              <span>Komeza kuri Email OTP</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </form>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </>
+              </form>
+            )}
+          </div>
+        </div>
       )}
+
+      {/* FOOTER */}
+      <footer className="bg-slate-900 text-slate-400 text-xs py-8 px-4 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-white font-bold">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>SmartStock Rwanda © 2026</span>
+          </div>
+          <div>Kigali, Rwanda | Helpline: +250 788 123 456</div>
+        </div>
+      </footer>
     </div>
   );
 };
+
+export default LandingPage;
